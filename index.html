@@ -1,10 +1,1368 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <title>我的名片</title>
-    <meta charset="utf-8">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>秦毅 · 可编辑作品 & 博客</title>
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* ===== 全局重置 & iOS 风格 ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(160deg, #f0edf7 0%, #e6e1ef 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      padding: 20px;
+      margin: 0;
+    }
+
+    .card {
+      max-width: 1200px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.68);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border-radius: 56px;
+      padding: 32px 36px 40px;
+      box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.7);
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    /* ===== 头像 & 头部 ===== */
+    .profile-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 24px 30px;
+      margin-bottom: 28px;
+    }
+
+    .avatar-wrapper {
+      position: relative;
+      flex-shrink: 0;
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: #d4c8e6;
+      box-shadow: 0 10px 24px -6px rgba(80, 60, 110, 0.2);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.25s ease, box-shadow 0.3s;
+      border: 3px solid rgba(255, 255, 255, 0.9);
+    }
+
+    .avatar-wrapper:hover {
+      transform: scale(1.02);
+      box-shadow: 0 14px 30px -8px rgba(70, 50, 100, 0.3);
+    }
+
+    .avatar-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .avatar-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #b7a9d4;
+      color: #3f2d5e;
+      font-size: 44px;
+      font-weight: 500;
+      letter-spacing: 2px;
+    }
+
+    #avatarInput { display: none; }
+
+    .name-title {
+      flex: 1;
+    }
+
+    .name-title h1 {
+      font-size: 2.5rem;
+      font-weight: 650;
+      color: #1f1433;
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .name-title h1 i {
+      color: #7b62a5;
+      font-size: 1.4rem;
+      opacity: 0.4;
+    }
+
+    .school-tag {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      margin-top: 6px;
+    }
+
+    .school-tag span {
+      background: rgba(106, 78, 148, 0.10);
+      backdrop-filter: blur(4px);
+      padding: 6px 18px;
+      border-radius: 40px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #352554;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .school-tag i { color: #6b4f8b; }
+
+    /* ===== 简介 + 联系方式 ===== */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px 20px;
+      margin: 24px 0 28px;
+    }
+
+    @media (max-width: 640px) {
+      .info-grid { grid-template-columns: 1fr; gap: 16px; }
+      .profile-header { flex-direction: column; align-items: center; text-align: center; }
+      .name-title h1 { font-size: 2.0rem; justify-content: center; }
+      .school-tag { justify-content: center; }
+    }
+
+    .info-panel {
+      background: rgba(255, 255, 255, 0.45);
+      backdrop-filter: blur(8px);
+      border-radius: 32px;
+      padding: 18px 22px;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.02);
+    }
+
+    .info-panel h3 {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: #5b4679;
+      margin-bottom: 12px;
+      font-weight: 600;
+      opacity: 0.7;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(106, 78, 148, 0.07);
+      color: #241a38;
+      font-weight: 450;
+    }
+
+    .contact-item:last-child { border-bottom: none; }
+    .contact-item i { width: 22px; color: #6b4f8b; font-size: 1rem; }
+    .contact-item a { text-decoration: none; color: #241a38; transition: 0.15s; word-break: break-all; }
+    .contact-item a:hover { color: #4b2d75; text-decoration: underline; }
+
+    .bio-content {
+      font-size: 0.98rem;
+      line-height: 1.6;
+      color: #241a38;
+      padding: 4px 0 2px;
+      min-height: 50px;
+      outline: none;
+      border-radius: 12px;
+      transition: 0.1s;
+      background: transparent;
+      word-break: break-word;
+    }
+
+    .bio-content:focus {
+      background: rgba(255, 255, 255, 0.25);
+      box-shadow: 0 0 0 3px rgba(106, 78, 148, 0.12);
+      padding: 4px 12px;
+      margin: 0 -12px;
+    }
+
+    .click-hint {
+      font-size: 0.6rem;
+      color: #8f7aa8;
+      margin-top: 4px;
+      opacity: 0.5;
+      font-weight: 400;
+      letter-spacing: 0.3px;
+    }
+
+    /* ==========================================================
+       作品展示 (可编辑, 添加JPG照片)
+       ========================================================== */
+    .works-section {
+      margin: 32px 0 28px;
+    }
+
+    .works-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .works-header h3 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: #5b4679;
+      font-weight: 600;
+      opacity: 0.7;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .add-work-btn {
+      background: rgba(123, 98, 165, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(4px);
+      padding: 8px 20px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #3d2a5e;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .add-work-btn:hover {
+      background: rgba(123, 98, 165, 0.25);
+      transform: scale(1.02);
+    }
+
+    .works-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 24px;
+      margin-top: 6px;
+    }
+
+    .work-card {
+      background: rgba(255, 255, 255, 0.55);
+      backdrop-filter: blur(8px);
+      border-radius: 32px;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: 0 8px 20px -10px rgba(60, 40, 80, 0.08);
+      overflow: hidden;
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .work-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 32px -12px rgba(60, 40, 80, 0.15);
+      background: rgba(255, 255, 255, 0.8);
+    }
+
+    .work-card .work-img-wrapper {
+      width: 100%;
+      height: 160px;
+      background: #d9cee8;
+      overflow: hidden;
+      position: relative;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .work-card .work-img-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .work-card .work-img-wrapper .img-placeholder {
+      color: #8f7aa8;
+      font-size: 0.75rem;
+      opacity: 0.6;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      pointer-events: none;
+    }
+
+    .work-card .work-img-wrapper .img-placeholder i {
+      font-size: 2.4rem;
+      opacity: 0.4;
+    }
+
+    .work-card .work-img-wrapper .upload-hint {
+      position: absolute;
+      bottom: 8px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(4px);
+      color: white;
+      font-size: 0.55rem;
+      padding: 3px 10px;
+      border-radius: 30px;
+      opacity: 0;
+      transition: 0.2s;
+      pointer-events: none;
+    }
+
+    .work-card:hover .upload-hint {
+      opacity: 0.8;
+    }
+
+    .work-card .work-info {
+      padding: 14px 16px 16px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .work-card .work-title {
+      font-weight: 630;
+      font-size: 1.0rem;
+      color: #1f1433;
+      outline: none;
+      background: transparent;
+      border: none;
+      padding: 2px 0;
+      border-radius: 8px;
+      transition: 0.1s;
+      margin-bottom: 2px;
+    }
+
+    .work-card .work-title:focus {
+      background: rgba(255, 255, 255, 0.4);
+      box-shadow: 0 0 0 2px rgba(106, 78, 148, 0.12);
+      padding: 2px 8px;
+      margin: 0 -8px;
+    }
+
+    .work-card .work-desc {
+      font-size: 0.8rem;
+      color: #4d3a6b;
+      opacity: 0.7;
+      outline: none;
+      background: transparent;
+      border: none;
+      padding: 2px 0;
+      border-radius: 8px;
+      transition: 0.1s;
+      margin-top: 2px;
+    }
+
+    .work-card .work-desc:focus {
+      background: rgba(255, 255, 255, 0.4);
+      box-shadow: 0 0 0 2px rgba(106, 78, 148, 0.10);
+      padding: 2px 8px;
+      margin: 0 -8px;
+    }
+
+    .work-card .delete-work {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(4px);
+      border: none;
+      color: white;
+      width: 28px;
+      height: 28px;
+      border-radius: 30px;
+      font-size: 0.7rem;
+      cursor: pointer;
+      opacity: 0;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .work-card:hover .delete-work {
+      opacity: 0.8;
+    }
+
+    .work-card .delete-work:hover {
+      background: rgba(180, 60, 60, 0.7);
+      opacity: 1;
+    }
+
+    .work-card .work-img-wrapper input[type="file"] {
+      display: none;
+    }
+
+    /* ==========================================================
+       博客区域 (可添加、可编辑)
+       ========================================================== */
+    .blog-section {
+      margin: 32px 0 28px;
+      border-top: 1px solid rgba(106, 78, 148, 0.08);
+      padding-top: 28px;
+    }
+
+    .blog-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .blog-header h3 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: #5b4679;
+      font-weight: 600;
+      opacity: 0.7;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .blog-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .blog-actions .add-blog-btn {
+      background: rgba(123, 98, 165, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(4px);
+      padding: 8px 20px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #3d2a5e;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .blog-actions .add-blog-btn:hover {
+      background: rgba(123, 98, 165, 0.25);
+      transform: scale(1.02);
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(4px);
+      border-radius: 40px;
+      padding: 6px 16px 6px 20px;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+      transition: all 0.2s;
+    }
+
+    .search-box:focus-within {
+      background: rgba(255, 255, 255, 0.8);
+      box-shadow: 0 4px 14px rgba(70, 50, 100, 0.08);
+      border-color: #b7a5d6;
+    }
+
+    .search-box i {
+      color: #7b62a5;
+      opacity: 0.5;
+      font-size: 0.9rem;
+      margin-right: 8px;
+    }
+
+    .search-box input {
+      border: none;
+      background: transparent;
+      padding: 8px 0;
+      font-size: 0.9rem;
+      outline: none;
+      width: 150px;
+      color: #241a38;
+      font-weight: 450;
+    }
+
+    .search-box input::placeholder {
+      color: #9b89b5;
+      font-weight: 400;
+    }
+
+    .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 22px;
+      margin-top: 8px;
+    }
+
+    .blog-card {
+      background: rgba(255, 255, 255, 0.50);
+      backdrop-filter: blur(8px);
+      border-radius: 32px;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: 0 8px 20px -10px rgba(60, 40, 80, 0.08);
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.1);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .blog-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 18px 36px -12px rgba(60, 40, 80, 0.18);
+      background: rgba(255, 255, 255, 0.75);
+    }
+
+    .blog-card .blog-cover-wrapper {
+      width: 100%;
+      height: 130px;
+      background: #d9cee8;
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .blog-card .blog-cover-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .blog-card .blog-cover-wrapper .cover-placeholder {
+      color: #8f7aa8;
+      font-size: 0.7rem;
+      opacity: 0.5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .blog-card .blog-cover-wrapper .cover-placeholder i {
+      font-size: 2rem;
+      opacity: 0.4;
+    }
+
+    .blog-card .blog-cover-wrapper input[type="file"] {
+      display: none;
+    }
+
+    .blog-card .blog-content {
+      padding: 14px 16px 16px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .blog-card .blog-content .blog-title {
+      font-size: 1.05rem;
+      font-weight: 630;
+      color: #1f1433;
+      line-height: 1.3;
+      margin-bottom: 4px;
+      outline: none;
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      transition: 0.1s;
+    }
+
+    .blog-card .blog-content .blog-title:focus {
+      background: rgba(255, 255, 255, 0.4);
+      box-shadow: 0 0 0 2px rgba(106, 78, 148, 0.12);
+      padding: 2px 8px;
+      margin: 0 -8px;
+    }
+
+    .blog-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.7rem;
+      color: #6b5a83;
+      margin: 4px 0 8px;
+      letter-spacing: 0.2px;
+    }
+
+    .blog-meta .blog-date {
+      outline: none;
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      padding: 0 4px;
+      font-size: 0.7rem;
+      color: #6b5a83;
+      font-weight: 450;
+      width: 100px;
+    }
+
+    .blog-meta .blog-date:focus {
+      background: rgba(255, 255, 255, 0.4);
+      box-shadow: 0 0 0 2px rgba(106, 78, 148, 0.08);
+    }
+
+    .blog-summary {
+      font-size: 0.85rem;
+      color: #2e1f47;
+      line-height: 1.5;
+      opacity: 0.8;
+      flex: 1;
+      outline: none;
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      transition: 0.1s;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      resize: vertical;
+      min-height: 40px;
+    }
+
+    .blog-summary:focus {
+      background: rgba(255, 255, 255, 0.4);
+      box-shadow: 0 0 0 2px rgba(106, 78, 148, 0.10);
+      padding: 4px 8px;
+      margin: 0 -8px;
+      -webkit-line-clamp: unset;
+      overflow: visible;
+      height: auto;
+    }
+
+    .blog-card .delete-blog {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(4px);
+      border: none;
+      color: white;
+      width: 28px;
+      height: 28px;
+      border-radius: 30px;
+      font-size: 0.7rem;
+      cursor: pointer;
+      opacity: 0;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .blog-card:hover .delete-blog {
+      opacity: 0.8;
+    }
+
+    .blog-card .delete-blog:hover {
+      background: rgba(180, 60, 60, 0.7);
+      opacity: 1;
+    }
+
+    .no-result {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 36px 0;
+      color: #7b6a93;
+      font-weight: 450;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 48px;
+      backdrop-filter: blur(4px);
+    }
+
+    /* ===== 留言板 ===== */
+    .guestbook-section {
+      margin: 24px 0 8px;
+      border-top: 1px solid rgba(106, 78, 148, 0.08);
+      padding-top: 28px;
+    }
+
+    .guestbook-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .guestbook-header h3 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: #5b4679;
+      font-weight: 600;
+      opacity: 0.7;
+    }
+
+    .guestbook-header i {
+      color: #7b62a5;
+      opacity: 0.5;
+    }
+
+    .guestbook-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px 16px;
+      background: rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(4px);
+      border-radius: 36px;
+      padding: 18px 24px;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      align-items: center;
+    }
+
+    .guestbook-form input,
+    .guestbook-form textarea {
+      border: none;
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(4px);
+      border-radius: 40px;
+      padding: 12px 20px;
+      font-size: 0.9rem;
+      outline: none;
+      color: #1f1433;
+      font-weight: 450;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      transition: 0.15s;
+      flex: 1 1 140px;
+      font-family: inherit;
+    }
+
+    .guestbook-form input:focus,
+    .guestbook-form textarea:focus {
+      background: rgba(255, 255, 255, 0.85);
+      border-color: #b7a5d6;
+      box-shadow: 0 2px 12px rgba(70, 50, 100, 0.06);
+    }
+
+    .guestbook-form textarea {
+      resize: vertical;
+      min-height: 50px;
+      border-radius: 28px;
+      flex-basis: 200px;
+    }
+
+    .guestbook-form button {
+      background: #7b62a5;
+      border: none;
+      color: white;
+      padding: 12px 28px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(106, 78, 148, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(2px);
+      flex-shrink: 0;
+    }
+
+    .guestbook-form button:hover {
+      background: #6b4f8b;
+      transform: scale(1.02);
+      box-shadow: 0 8px 20px rgba(106, 78, 148, 0.25);
+    }
+
+    .guestbook-form button:active {
+      transform: scale(0.96);
+    }
+
+    .comments-list {
+      margin-top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-height: 280px;
+      overflow-y: auto;
+      padding-right: 6px;
+    }
+
+    .comments-list::-webkit-scrollbar {
+      width: 4px;
+    }
+    .comments-list::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.02);
+      border-radius: 10px;
+    }
+    .comments-list::-webkit-scrollbar-thumb {
+      background: #c7bade;
+      border-radius: 10px;
+    }
+
+    .comment-item {
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(4px);
+      border-radius: 28px;
+      padding: 16px 22px;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+      animation: fadeSlide 0.25s ease;
+    }
+
+    @keyframes fadeSlide {
+      0% { opacity: 0; transform: translateY(10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .comment-name {
+      font-weight: 650;
+      color: #1f1433;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .comment-name small {
+      font-weight: 400;
+      color: #8f7aa8;
+      font-size: 0.7rem;
+    }
+
+    .comment-text {
+      margin-top: 6px;
+      color: #2e1f47;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      word-break: break-word;
+    }
+
+    .empty-comments {
+      text-align: center;
+      color: #8f7aa8;
+      padding: 20px 0;
+      font-size: 0.9rem;
+      opacity: 0.5;
+    }
+
+    .footer-note {
+      margin-top: 30px;
+      text-align: right;
+      font-size: 0.7rem;
+      color: #7b6a93;
+      letter-spacing: 0.3px;
+      border-top: 1px solid rgba(106, 78, 148, 0.06);
+      padding-top: 18px;
+      opacity: 0.5;
+    }
+
+    @media (max-width: 500px) {
+      .card { padding: 20px 16px 28px; border-radius: 40px; }
+      .guestbook-form { flex-direction: column; align-items: stretch; border-radius: 28px; padding: 18px; }
+      .guestbook-form input, .guestbook-form textarea { flex-basis: auto; }
+      .works-grid { grid-template-columns: 1fr 1fr; }
+      .blog-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 420px) {
+      .works-grid { grid-template-columns: 1fr; }
+      .blog-grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
-<body>  
-    <h1>你好,我是 秦毅</h1>
+<body>
+
+<div class="card">
+
+  <!-- ===== 名片头部 ===== -->
+  <div class="profile-header">
+    <div class="avatar-wrapper" id="avatarWrapper" title="点击更换头像">
+      <div class="avatar-placeholder" id="avatarPlaceholder">秦</div>
+      <img id="avatarImage" style="display: none;" alt="头像" />
+    </div>
+    <input type="file" id="avatarInput" accept="image/*">
+    <div class="name-title">
+      <h1>秦毅 <i class="fas fa-pencil-alt"></i></h1>
+      <div class="school-tag">
+        <span><i class="fas fa-school"></i> 杭州第二中学钱江学校</span>
+        <span><i class="fas fa-university"></i> 浙大城市学院</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 简介 + 联系方式 ===== -->
+  <div class="info-grid">
+    <div class="info-panel">
+      <h3><i class="fas fa-user-astronaut"></i> 关于我</h3>
+      <div class="bio-content" contenteditable="true" id="bioContent">
+        <i class="fas fa-gamepad"></i> 喜欢玩单机游戏，做模型。
+      </div>
+      <div class="click-hint"><i class="fas fa-edit"></i> 点击编辑简介</div>
+    </div>
+    <div class="info-panel">
+      <h3><i class="fas fa-address-card"></i> 联系</h3>
+      <div class="contact-item"><i class="fas fa-phone-alt"></i><span>15757117524</span></div>
+      <div class="contact-item"><i class="fas fa-envelope"></i><a href="mailto:wlsugx838372erqh@163.com">wlsugx838372erqh@163.com</a></div>
+      <div class="contact-item" style="border-bottom: none; padding-bottom: 4px;"><i class="fas fa-map-pin"></i><span>杭州 · 中国</span></div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       作品展示 (可添加JPG照片, 可编辑)
+       ============================================================ -->
+  <div class="works-section">
+    <div class="works-header">
+      <h3><i class="fas fa-images"></i> 作品 · 模型</h3>
+      <button class="add-work-btn" id="addWorkBtn"><i class="fas fa-plus-circle"></i> 添加作品</button>
+    </div>
+    <div class="works-grid" id="worksGrid">
+      <!-- 由 JS 动态渲染 -->
+    </div>
+  </div>
+
+  <!-- ============================================================
+       博客区域 (可添加、可编辑、可搜索)
+       ============================================================ -->
+  <div class="blog-section">
+    <div class="blog-header">
+      <h3><i class="fas fa-pen-fancy"></i> 个人博客</h3>
+      <div class="blog-actions">
+        <button class="add-blog-btn" id="addBlogBtn"><i class="fas fa-plus-circle"></i> 添加文章</button>
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" id="searchInput" placeholder="搜索文章..." />
+        </div>
+      </div>
+    </div>
+    <div class="blog-grid" id="blogGrid">
+      <!-- 由 JS 动态渲染 -->
+    </div>
+  </div>
+
+  <!-- ===== 留言板 ===== -->
+  <div class="guestbook-section">
+    <div class="guestbook-header">
+      <i class="fas fa-comment-dots" style="font-size: 1.2rem; color: #7b62a5; opacity: 0.6;"></i>
+      <h3>留言板</h3>
+    </div>
+    <div class="guestbook-form">
+      <input type="text" id="guestName" placeholder="你的名字" />
+      <textarea id="guestMessage" placeholder="写留言..." rows="1"></textarea>
+      <button id="submitComment"><i class="fas fa-paper-plane" style="margin-right: 8px;"></i> 发送</button>
+    </div>
+    <div class="comments-list" id="commentsList">
+      <div class="empty-comments">还没有留言，来说点什么吧 :)</div>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    <i class="fas fa-sync-alt fa-fw"></i> 所有数据保存在本地 · 点击文字可编辑 · 点击图片可更换
+  </div>
+</div>
+
+<script>
+  (function() {
+    // ============================================================
+    //  工具：防 XSS
+    // ============================================================
+    function escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // ============================================================
+    //  1. 头像
+    // ============================================================
+    const avatarWrapper = document.getElementById('avatarWrapper');
+    const avatarInput = document.getElementById('avatarInput');
+    const avatarImage = document.getElementById('avatarImage');
+    const avatarPlaceholder = document.getElementById('avatarPlaceholder');
+
+    avatarWrapper.addEventListener('click', () => avatarInput.click());
+    avatarInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        const dataUrl = ev.target.result;
+        avatarImage.src = dataUrl;
+        avatarImage.style.display = 'block';
+        avatarPlaceholder.style.display = 'none';
+        try { localStorage.setItem('avatarData', dataUrl); } catch (err) {}
+      };
+      reader.readAsDataURL(file);
+    });
+    try {
+      const saved = localStorage.getItem('avatarData');
+      if (saved) {
+        avatarImage.src = saved;
+        avatarImage.style.display = 'block';
+        avatarPlaceholder.style.display = 'none';
+      }
+    } catch (e) {}
+
+    // ============================================================
+    //  2. 简介
+    // ============================================================
+    const bioContent = document.getElementById('bioContent');
+    bioContent.addEventListener('blur', function() {
+      try { localStorage.setItem('bioContent', this.innerHTML); } catch (e) {}
+    });
+    try {
+      const savedBio = localStorage.getItem('bioContent');
+      if (savedBio) bioContent.innerHTML = savedBio;
+    } catch (e) {}
+
+    // ============================================================
+    //  3. 作品数据 (可添加JPG照片)
+    // ============================================================
+    let worksData = [];
+    const WORKS_KEY = 'myWorksData';
+
+    function loadWorks() {
+      try {
+        const stored = localStorage.getItem(WORKS_KEY);
+        if (stored) worksData = JSON.parse(stored);
+        else worksData = getDefaultWorks();
+      } catch (e) { worksData = getDefaultWorks(); }
+    }
+
+    function getDefaultWorks() {
+      return [
+        { id: Date.now() + 1, title: 'MG 红异端', desc: '金属质感喷涂', img: '' },
+        { id: Date.now() + 2, title: '战锤 星际战士', desc: '干扫旧化涂装', img: '' },
+        { id: Date.now() + 3, title: '千年隼 拼装', desc: '星球大战 1/72', img: '' },
+      ];
+    }
+
+    function saveWorks() {
+      try { localStorage.setItem(WORKS_KEY, JSON.stringify(worksData)); } catch (e) {}
+    }
+
+    function renderWorks() {
+      const grid = document.getElementById('worksGrid');
+      if (!worksData || worksData.length === 0) {
+        grid.innerHTML = `<div class="no-result" style="grid-column:1/-1;"><i class="fas fa-plus-circle"></i> 点击 “添加作品” 来创建</div>`;
+        return;
+      }
+      grid.innerHTML = worksData.map((item, index) => `
+        <div class="work-card" data-index="${index}">
+          <div class="work-img-wrapper" data-index="${index}">
+            ${item.img ? `<img src="${escapeHtml(item.img)}" alt="作品图" />` :
+              `<div class="img-placeholder"><i class="fas fa-image"></i><span>点击添加 JPG</span></div>`}
+            <input type="file" accept="image/jpeg,image/png,image/webp" class="work-img-input" data-index="${index}" />
+            <span class="upload-hint"><i class="fas fa-camera"></i> 更换</span>
+          </div>
+          <div class="work-info">
+            <div class="work-title" contenteditable="true" data-field="title" data-index="${index}">${escapeHtml(item.title)}</div>
+            <div class="work-desc" contenteditable="true" data-field="desc" data-index="${index}">${escapeHtml(item.desc || '')}</div>
+          </div>
+          <button class="delete-work" data-index="${index}" title="删除作品"><i class="fas fa-times"></i></button>
+        </div>
+      `).join('');
+
+      // ----- 绑定作品事件 -----
+      // 删除
+      document.querySelectorAll('.work-card .delete-work').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const idx = parseInt(this.dataset.index);
+          if (confirm('确定删除这个作品吗？')) {
+            worksData.splice(idx, 1);
+            saveWorks();
+            renderWorks();
+          }
+        });
+      });
+
+      // 图片上传
+      document.querySelectorAll('.work-card .work-img-wrapper').forEach(wrapper => {
+        const idx = parseInt(wrapper.dataset.index);
+        const fileInput = wrapper.querySelector('.work-img-input');
+        wrapper.addEventListener('click', function(e) {
+          if (e.target.tagName === 'INPUT') return;
+          fileInput.click();
+        });
+        fileInput.addEventListener('change', function(e) {
+          const file = e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = function(ev) {
+            const dataUrl = ev.target.result;
+            worksData[idx].img = dataUrl;
+            saveWorks();
+            renderWorks();
+          };
+          reader.readAsDataURL(file);
+        });
+      });
+
+      // 文本编辑 (title, desc)
+      document.querySelectorAll('.work-card [contenteditable="true"]').forEach(el => {
+        el.addEventListener('blur', function() {
+          const idx = parseInt(this.dataset.index);
+          const field = this.dataset.field;
+          if (field === 'title') worksData[idx].title = this.innerText.trim() || '未命名';
+          else if (field === 'desc') worksData[idx].desc = this.innerText.trim();
+          saveWorks();
+        });
+      });
+    }
+
+    // 添加作品
+    document.getElementById('addWorkBtn').addEventListener('click', function() {
+      worksData.push({
+        id: Date.now(),
+        title: '新作品',
+        desc: '描述文字',
+        img: ''
+      });
+      saveWorks();
+      renderWorks();
+    });
+
+    // ============================================================
+    //  4. 博客数据 (可添加、可编辑)
+    // ============================================================
+    let blogData = [];
+    const BLOG_KEY = 'myBlogData';
+
+    function loadBlogs() {
+      try {
+        const stored = localStorage.getItem(BLOG_KEY);
+        if (stored) blogData = JSON.parse(stored);
+        else blogData = getDefaultBlogs();
+      } catch (e) { blogData = getDefaultBlogs(); }
+    }
+
+    function getDefaultBlogs() {
+      return [
+        { id: Date.now() + 10, title: 'MG 红异端 改造记录', date: '2026-07-20', summary: '全骨架喷涂，金属色点缀，自制武器配件。', cover: '' },
+        { id: Date.now() + 11, title: '《艾尔登法环》DLC 心得', date: '2026-07-15', summary: '新 boss 机制解析，逃课打法与剧情彩蛋。', cover: '' },
+        { id: Date.now() + 12, title: 'Vue3 + Vite 从零搭建', date: '2026-07-08', summary: '组合式 API、路由配置、状态管理实战。', cover: '' },
+      ];
+    }
+
+    function saveBlogs() {
+      try { localStorage.setItem(BLOG_KEY, JSON.stringify(blogData)); } catch (e) {}
+    }
+
+    function renderBlogs(filter = '') {
+      const grid = document.getElementById('blogGrid');
+      const keyword = filter.trim().toLowerCase();
+      let filtered = blogData;
+      if (keyword) {
+        filtered = blogData.filter(item =>
+          item.title.toLowerCase().includes(keyword) ||
+          item.summary.toLowerCase().includes(keyword)
+        );
+      }
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div class="no-result"><i class="fas fa-search"></i> 没有找到文章</div>`;
+        return;
+      }
+      grid.innerHTML = filtered.map((item, index) => {
+        const realIndex = blogData.indexOf(item); // 保持正确索引
+        return `
+          <div class="blog-card" data-index="${realIndex}">
+            <div class="blog-cover-wrapper" data-index="${realIndex}">
+              ${item.cover ? `<img src="${escapeHtml(item.cover)}" alt="封面" />` :
+                `<div class="cover-placeholder"><i class="fas fa-image"></i><span>点击添加封面</span></div>`}
+              <input type="file" accept="image/jpeg,image/png,image/webp" class="blog-cover-input" data-index="${realIndex}" />
+            </div>
+            <div class="blog-content">
+              <div class="blog-title" contenteditable="true" data-field="title" data-index="${realIndex}">${escapeHtml(item.title)}</div>
+              <div class="blog-meta">
+                <i class="far fa-calendar-alt"></i>
+                <input class="blog-date" type="date" value="${item.date || ''}" data-index="${realIndex}" />
+              </div>
+              <div class="blog-summary" contenteditable="true" data-field="summary" data-index="${realIndex}">${escapeHtml(item.summary)}</div>
+            </div>
+            <button class="delete-blog" data-index="${realIndex}" title="删除文章"><i class="fas fa-times"></i></button>
+          </div>
+        `;
+      }).join('');
+
+      // ----- 绑定博客事件 -----
+      // 删除
+      document.querySelectorAll('.blog-card .delete-blog').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const idx = parseInt(this.dataset.index);
+          if (confirm('确定删除这篇文章吗？')) {
+            blogData.splice(idx, 1);
+            saveBlogs();
+            renderBlogs(document.getElementById('searchInput').value);
+          }
+        });
+      });
+
+      // 封面图片上传
+      document.querySelectorAll('.blog-card .blog-cover-wrapper').forEach(wrapper => {
+        const idx = parseInt(wrapper.dataset.index);
+        const fileInput = wrapper.querySelector('.blog-cover-input');
+        wrapper.addEventListener('click', function(e) {
+          if (e.target.tagName === 'INPUT') return;
+          fileInput.click();
+        });
+        fileInput.addEventListener('change', function(e) {
+          const file = e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = function(ev) {
+            blogData[idx].cover = ev.target.result;
+            saveBlogs();
+            renderBlogs(document.getElementById('searchInput').value);
+          };
+          reader.readAsDataURL(file);
+        });
+      });
+
+      // 文本编辑 (title, summary)
+      document.querySelectorAll('.blog-card [contenteditable="true"]').forEach(el => {
+        el.addEventListener('blur', function() {
+          const idx = parseInt(this.dataset.index);
+          const field = this.dataset.field;
+          if (field === 'title') blogData[idx].title = this.innerText.trim() || '无标题';
+          else if (field === 'summary') blogData[idx].summary = this.innerText.trim();
+          saveBlogs();
+        });
+      });
+
+      // 日期编辑
+      document.querySelectorAll('.blog-card .blog-date').forEach(input => {
+        input.addEventListener('change', function() {
+          const idx = parseInt(this.dataset.index);
+          blogData[idx].date = this.value;
+          saveBlogs();
+        });
+      });
+    }
+
+    // 添加博客
+    document.getElementById('addBlogBtn').addEventListener('click', function() {
+      const now = new Date();
+      const dateStr = now.getFullYear() + '-' +
+        String(now.getMonth() + 1).padStart(2, '0') + '-' +
+        String(now.getDate()).padStart(2, '0');
+      blogData.push({
+        id: Date.now(),
+        title: '新文章标题',
+        date: dateStr,
+        summary: '在这里写下摘要...',
+        cover: ''
+      });
+      saveBlogs();
+      renderBlogs(document.getElementById('searchInput').value);
+    });
+
+    // 搜索
+    document.getElementById('searchInput').addEventListener('input', function() {
+      renderBlogs(this.value);
+    });
+
+    // ============================================================
+    //  5. 留言板
+    // ============================================================
+    const commentsList = document.getElementById('commentsList');
+    const guestName = document.getElementById('guestName');
+    const guestMessage = document.getElementById('guestMessage');
+    const submitBtn = document.getElementById('submitComment');
+
+    function loadComments() {
+      let comments = [];
+      try {
+        const stored = localStorage.getItem('guestbookComments');
+        if (stored) comments = JSON.parse(stored);
+      } catch (e) { comments = []; }
+      if (!comments || comments.length === 0) {
+        commentsList.innerHTML = `<div class="empty-comments">还没有留言，来说点什么吧 :)</div>`;
+        return;
+      }
+      commentsList.innerHTML = comments.map((c) => `
+        <div class="comment-item">
+          <div class="comment-name">${escapeHtml(c.name) || '匿名'} <small>${c.time || ''}</small></div>
+          <div class="comment-text">${escapeHtml(c.message)}</div>
+        </div>
+      `).join('');
+    }
+
+    function saveComment(name, message) {
+      if (!name.trim() || !message.trim()) {
+        alert('请填写名字和留言内容');
+        return false;
+      }
+      let comments = [];
+      try {
+        const stored = localStorage.getItem('guestbookComments');
+        if (stored) comments = JSON.parse(stored);
+      } catch (e) { comments = []; }
+      const now = new Date();
+      const timeStr =
+        now.getFullYear() + '-' +
+        String(now.getMonth() + 1).padStart(2, '0') + '-' +
+        String(now.getDate()).padStart(2, '0') + ' ' +
+        String(now.getHours()).padStart(2, '0') + ':' +
+        String(now.getMinutes()).padStart(2, '0');
+      comments.unshift({ name: name.trim(), message: message.trim(), time: timeStr });
+      if (comments.length > 50) comments = comments.slice(0, 50);
+      try { localStorage.setItem('guestbookComments', JSON.stringify(comments)); } catch (e) {}
+      loadComments();
+      guestName.value = '';
+      guestMessage.value = '';
+      return true;
+    }
+
+    submitBtn.addEventListener('click', function() {
+      const name = guestName.value.trim() || '匿名';
+      const msg = guestMessage.value.trim();
+      if (!msg) { alert('请写点留言 :)'); return; }
+      saveComment(name, msg);
+    });
+    guestMessage.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submitBtn.click(); }
+    });
+
+    // ============================================================
+    //  初始化
+    // ============================================================
+    loadWorks();
+    renderWorks();
+    loadBlogs();
+    renderBlogs('');
+    loadComments();
+
+    console.log('✅ 可编辑作品 & 博客已加载 (支持JPG照片)');
+  })();
+</script>
 </body>
-</html>  
+</html>
