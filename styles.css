@@ -67,6 +67,8 @@ button { color: inherit; }
 .avatar-wrapper:focus-visible { outline: 4px solid rgba(107, 79, 139, 0.22); }
 .avatar-wrapper img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .avatar-placeholder { display: grid; width: 100%; height: 100%; place-items: center; color: #3f2d5e; font-size: 44px; font-weight: 550; background: #b7a9d4; }
+.avatar-placeholder[hidden],
+.avatar-wrapper img[hidden] { display: none !important; }
 
 .name-title { flex: 1; }
 .name-title h1 { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; color: var(--ink-strong); font-size: clamp(2rem, 5vw, 2.5rem); line-height: 1.1; }
